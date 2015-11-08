@@ -1,0 +1,7 @@
+strut stat statstruct;
+stat("path/to/direct",&statstruct);
+if(S_IS_DIR(statstruct.st_mode))
+// do something
+
+dir* opendir("path/to/dir/")
+struct dirent* directoryentity = readdir(dir)
