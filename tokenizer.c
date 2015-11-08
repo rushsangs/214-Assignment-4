@@ -4,6 +4,9 @@
 
 //Updated again with some small fixes. Still stomping out bugs though. -Ethan 9:45AM
 
+//A few more bugs squashed, note the way that I read input from the file with fgets and tokenize it with strtok(), 
+// that's somewhat important. It ensures my functions are only recieving strings, no punctuation or spaces or any of that.
+//Gonna take a break for a little bit, be back later. -Ethan 10:46
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -98,7 +101,7 @@ Node *insert(Node *head, char *input)
 
 			tmp->freq++;
 
-			if(tmp!=head && tmp->prev->freq < tmp->freq)
+			if(tmp!=head && tmp->prev->freq <= tmp->freq)
 			{
 				Node *freqcheck = head;
 				//Node *holding = freqcheck->prev;
@@ -177,7 +180,7 @@ int main(int argc, char **argv)
 		return(0);
 	}
 	
-	char * delimiter = " \n\t";
+	char * delimiter = " \n\t,'-:.";
 
 
 	while(!feof(fp))
@@ -213,3 +216,4 @@ int main(int argc, char **argv)
 	fclose(fp);		
 	return(0);
 }
+
