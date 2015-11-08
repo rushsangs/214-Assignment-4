@@ -1,5 +1,13 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <dirent.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <ctype.h>
 #include "sorted-list.h"
-#include<stdio.h>
 
 typedef struct Token{
 	char *token;
@@ -13,7 +21,7 @@ typedef struct Source{
 
 int compareTokens(void * x,void* y){
 	Token* a= (Token*)x;
-	TOken* b= (Token*)y;
+	Token* b= (Token*)y;
 	return strcmp(a->token,b->token);
 }
 
@@ -25,7 +33,7 @@ int compareSources(void * x,void * y){
 	else if(a->frequency>b->frequency)
 		return 1;
 	else
-		return strmp(a->path,b->path);
+		return strcmp(a->path,b->path);
 }
 
 void destroyToken(void* x){
@@ -40,14 +48,37 @@ void destroySource(void * x){
 
 Token* lookup_token(char *token, SortedListIteratorPtr walker)
 {
-	if(strcmp((Token*)(SLGetItem(walker))->token,token)==0)
+	if(strcmp(((Token*)(SLGetItem(walker)))->token,token)==0)
 		return (Token*)(SLGetItem(walker));
 	while(SLNextItem(walker)!=NULL){
-		if(strcmp((Token*)(SLGetItem(walker))->token,token)==0)
+		if(strcmp(((Token*)(SLGetItem(walker)))->token,token)==0)
 			return (Token*)(SLGetItem(walker));
 	}
 	return NULL;
 }
+
+Source* lookup_source(char *file_name, SortedListIteratorPtr walker)
+{
+	if(strcmp(((Source*)(SLGetItem(walker)))->path,file_name)==0)
+		return (Source*)(SLGetItem(walker));
+	while(SLNextItem(walker)!=NULL){
+		if(strcmp(((Source*)(SLGetItem(walker)))->path,file_name)==0)
+			return (Source*)(SLGetItem(walker));
+	}
+	return NULL;
+}
+
+void displaySources(Token * t)
+{
+	SortedListIteratorPtr source_walker= SLCreateIterator(t->sources);
+	Source *s;
+	while(s=SLGetItem(source_walker),s!=NULL)
+	{
+		printf(" Source: %s frequency: %d \n",s->path, s->frequency );
+		SLNextItem(source_walker);
+	}
+}
+
 //assuming file_name is entire path of file
 int getTokensForFile(char* file_name, SortedListPtr tokens)
 {
@@ -62,7 +93,7 @@ int getTokensForFile(char* file_name, SortedListPtr tokens)
 	// head->word=NULL;
 	// head->freq=1;
 
-	FILE *fp = fopen(argv[1], "r");
+	FILE *fp = fopen(file_name, "r");
 
 	if(fp==NULL)
 	{
@@ -77,14 +108,16 @@ int getTokensForFile(char* file_name, SortedListPtr tokens)
 	{
 		char *input=(char *)malloc(sizeof(char)*255);
 		fgets(input, 255, fp); 
-
+		printf("Input is %s\n",input );
 		char *output = strtok(input, delimiter);
 		while(output != NULL)
 		{
 			if(isalpha(output[0]))
 			{
-				SortedListIteratorPtr tokens_iterator=SLCreateIterator(tokens); 
-				Token* thisToken = lookup_token(tokens_iterator);
+				printf("token is %s \n",output); 
+				SortedListIteratorPtr tokens_iterator=SLCreateIterator(tokens);
+				printf("Iterator for tokens created\n"); 
+				Token* thisToken = lookup_token(output, tokens_iterator);
 				if(thisToken==NULL)
 				{
 					//add new entry for token
@@ -92,10 +125,21 @@ int getTokensForFile(char* file_name, SortedListPtr tokens)
 					thisToken->token=output;
 					SortedListPtr sources=SLCreate(&compareSources,destroySource);
 					thisToken->sources=sources;
+					SLInsert(tokens, thisToken);
+
 				}
 				//check if source is present in the token's sources
-				SortedListIteratorPtr sources_iterator=SLCreateIterator(sources); 
-				head=insert(head, output);
+				SortedListIteratorPtr sources_iterator=SLCreateIterator(thisToken->sources); 
+				Source* thisSource = lookup_source(file_name, sources_iterator);
+				if(thisSource==NULL)
+				{
+					thisSource= (Source*)malloc(sizeof(Source));
+					thisSource->path=file_name;
+					thisSource->frequency=0;
+					SLInsert(thisToken->sources, thisSource);
+				}
+				thisSource->frequency++;
+				// head=insert(head, output);
 			}	
 			printf("just inserted: %s\n", output);
 			output = strtok(NULL, delimiter);
@@ -105,22 +149,35 @@ int getTokensForFile(char* file_name, SortedListPtr tokens)
 	
 
 	printf("SORTED WORDS\n");	
-	Node *tmp=head;
-	while(tmp!=NULL)
+	SortedListIteratorPtr token_walker=SLCreateIterator(tokens);
+	Token* t;
+	while(t=SLGetItem(token_walker),t!=NULL)
 	{
-		printf("%s \tfreq: %d \n", tmp->word, tmp->freq);
-		tmp=tmp->next;
-	}	
+		displaySources(t);
+		SLNextItem(token_walker);
+	}
+
+
+	// Node *tmp=head;
+	// while(tmp!=NULL)
+	// {
+		// printf("%s \tfreq: %d \n", tmp->word, tmp->freq);
+		// tmp=tmp->next;
+	// }	
 	
 
-	lookup(head, "b");
-	lookup(head, "c");
-	lookup(head, "g");
+	// lookup(head, "b");
+	// lookup(head, "c");
+	// lookup(head, "g");
 
 	fclose(fp);		
 	return(0);
 }
-
+int main()
+{
+	SortedListPtr tokens= SLCreate(compareTokens,destroyToken);
+	getTokensForFile("test1/abc/def/ghi/you.txt",NULL);
+}
 
 
 
