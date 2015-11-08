@@ -2,6 +2,8 @@
 //ordered by their frequency and then by alphabetical. Also has basic delete and lookup functions. 
 //It's not 100% done however, some bigger input seems to break it so I'll look into that. -Ethan 12:48AM
 
+//Updated again with some small fixes. Still stomping out bugs though. -Ethan 9:45AM
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -99,15 +101,19 @@ Node *insert(Node *head, char *input)
 			if(tmp!=head && tmp->prev->freq < tmp->freq)
 			{
 				Node *freqcheck = head;
+				//Node *holding = freqcheck->prev;
 
 				while(freqcheck->freq > tmp->freq)
 					freqcheck=freqcheck->next;
 
 				if(freqcheck->freq==tmp->freq)
 				{
-					while(strcmp(input, freqcheck->word)>0)
+					while(strcmp(input, freqcheck->word)>0 && freqcheck->freq==tmp->freq)
 						freqcheck=freqcheck->next;
+
 				}
+
+				Node *holding = freqcheck->prev;
 
 				if(freqcheck->prev!=NULL)
 					freqcheck->prev->next=tmp;
@@ -118,7 +124,7 @@ Node *insert(Node *head, char *input)
 				if(tmp->next!=NULL)
 					tmp->next->prev=tmp->prev;
 					
-				tmp->prev=freqcheck->prev;
+				tmp->prev=holding;
 				tmp->next=freqcheck;
 
 				if(freqcheck==head)
