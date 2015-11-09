@@ -48,6 +48,8 @@ void destroySource(void * x){
 
 Token* lookup_token(char *token, SortedListIteratorPtr walker)
 {
+	if(SLGetItem(walker)==NULL)
+		return NULL;
 	if(strcmp(((Token*)(SLGetItem(walker)))->token,token)==0)
 		return (Token*)(SLGetItem(walker));
 	while(SLNextItem(walker)!=NULL){
@@ -59,6 +61,8 @@ Token* lookup_token(char *token, SortedListIteratorPtr walker)
 
 Source* lookup_source(char *file_name, SortedListIteratorPtr walker)
 {
+	if(SLGetItem(walker)==NULL)
+		return NULL;
 	if(strcmp(((Source*)(SLGetItem(walker)))->path,file_name)==0)
 		return (Source*)(SLGetItem(walker));
 	while(SLNextItem(walker)!=NULL){
@@ -108,21 +112,25 @@ int getTokensForFile(char* file_name, SortedListPtr tokens)
 	{
 		char *input=(char *)malloc(sizeof(char)*255);
 		fgets(input, 255, fp); 
-		printf("Input is %s\n",input );
+		// printf("Input is %s\n",input );
 		char *output = strtok(input, delimiter);
 		while(output != NULL)
 		{
 			if(isalpha(output[0]))
 			{
-				printf("token is %s \n",output); 
+				// printf("token is %s \n",output); 
 				SortedListIteratorPtr tokens_iterator=SLCreateIterator(tokens);
-				printf("Iterator for tokens created\n"); 
+				// printf("Iterator for tokens created\n"); 
 				Token* thisToken = lookup_token(output, tokens_iterator);
+				//printf("Hi\n");
 				if(thisToken==NULL)
 				{
 					//add new entry for token
+					// printf("Adding new token to tokens SL\n");
 					thisToken=(Token*)malloc(sizeof(Token));
-					thisToken->token=output;
+					thisToken->token=(char*)malloc(strlen(output)*sizeof(char));
+					strcpy(thisToken->token,output);
+					// printf("String copied to token \n");
 					SortedListPtr sources=SLCreate(&compareSources,destroySource);
 					thisToken->sources=sources;
 					SLInsert(tokens, thisToken);
@@ -139,9 +147,9 @@ int getTokensForFile(char* file_name, SortedListPtr tokens)
 					SLInsert(thisToken->sources, thisSource);
 				}
 				thisSource->frequency++;
-				// head=insert(head, output);
+				//head=insert(head, output);
 			}	
-			printf("just inserted: %s\n", output);
+			// printf("just inserted: %s\n", output);
 			output = strtok(NULL, delimiter);
 			 
 		}
@@ -153,6 +161,7 @@ int getTokensForFile(char* file_name, SortedListPtr tokens)
 	Token* t;
 	while(t=SLGetItem(token_walker),t!=NULL)
 	{
+		printf("Token: %s\n",t->token );
 		displaySources(t);
 		SLNextItem(token_walker);
 	}
