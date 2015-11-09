@@ -105,7 +105,7 @@ SortedListPtr getTokensForFile(char* file_name, SortedListPtr tokens)
 		return(0);
 	}
 	
-	char * delimiter = " \n\t";
+	char * delimiter = " \n\t.-\\+)(][}{,!?$@#^&*=_";
 
 
 	while(!feof(fp))
@@ -113,7 +113,15 @@ SortedListPtr getTokensForFile(char* file_name, SortedListPtr tokens)
 		char *input=(char *)malloc(sizeof(char)*255);
 		fgets(input, 255, fp); 
 		// printf("Input is %s\n",input );
+
 		char *output = strtok(input, delimiter);
+		//THESE LINES GIVE A SEGFAULT
+		/*int i;
+		for(i = 0; output[i]; i++)
+		{
+			output[i]=tolower(output[i]);
+		}*/	
+
 		while(output != NULL)
 		{
 			if(isalpha(output[0]))
@@ -234,243 +242,43 @@ int main(int argc, char **argv)
 	if(tokens==NULL)
 		printf("tokens is null\n");
 	// printf("SORTED WORDS\n");	
+	
+
+
 	SortedListIteratorPtr token_walker=SLCreateIterator(tokens);
 	Token* t;
-	while(t=SLGetItem(token_walker),t!=NULL)
+		
+	FILE *f = fopen("file.txt", "w");
+	
+	fprintf(f, "{\"list\" : [ \n");
+	t=SLGetItem(token_walker);
+	while(t!=NULL)
 	{
-		printf("Token: %s\n",t->token );
-		displaySources(t);
+		fprintf(f,"\t{\"%s\" : [\n", t->token);
+
+		SortedListIteratorPtr source_walker= SLCreateIterator(t->sources);
+		Source *s = SLGetItem(source_walker);
+		while(s!=NULL)
+		{
+			fprintf(f,"\t\t{\"%s\" : %d", s->path, s->frequency);
+			SLNextItem(source_walker);
+			s = SLGetItem(source_walker);
+			if(s!=NULL)
+				fprintf(f,"},\n");
+			else
+				fprintf(f,"}\n");
+		}
+			
 		SLNextItem(token_walker);
+		t=SLGetItem(token_walker);
+		if(t!=NULL)
+			fprintf(f,"\t]},\n");
+		else
+			fprintf(f,"\t]}\n");
 	}
+	
+	fprintf(f, "]}");	
 	return 0;
 }
 
-// struct Node_ {
-
-// 	struct Node_ *next;
-// 	struct Node_ *prev;
-// 	char *word;	
-// 	int freq;
-// };
-
-// typedef struct Node_ Node;
-
-// Node *delete(Node *head, char *target)
-// {
-// 	Node *tmp=head;
-// 	Node *prev=NULL;
-	
-// 	while(tmp!=NULL && strcmp(target, tmp->word)!=0)
-// 	{
-// 		prev=tmp;
-// 		tmp=tmp->next;
-// 	}
-
-// 	if(tmp==NULL)
-// 		return head;
-// 	else if(tmp==head)
-// 	{
-// 		tmp = tmp->next;
-// 		free(head);
-// 		return tmp;
-// 	}
-// 	else
-// 	{
-// 		prev->next=tmp->next;
-// 		if(tmp->next!=NULL)
-// 			tmp->next = prev;
-// 		free(tmp);
-// 	}
-	
-// }
-
-// Node *insert(Node *head, char *input)
-// {
-// 	input[0]=tolower(input[0]);
-
-// 	if(head->word==NULL)
-// 		head->word=input;
-// 	else
-// 	{
-// 		Node *tmp = head;
-// 		Node *prev = NULL;
-
-// 		while(tmp->next!=NULL && tmp->freq>1)
-// 		{
-// 			if(strcmp(input, tmp->word)==0)
-// 				goto same;
-// 			tmp=tmp->next;
-// 		}
-
-// 		while(tmp->next!=NULL && strcmp(input, tmp->word)>0)
-// 		{
-// 			prev=tmp;
-// 			tmp=tmp->next;
-// 		}
-
-// 		if(strcmp(input, tmp->word)<0)
-// 		{
-// 			Node *new = (Node *)malloc(sizeof(Node));
-// 			new->word = input;
-// 			new->next=tmp;
-// 			new->prev=prev;
-// 			new->freq=1;
-
-// 			if(tmp==head)
-// 			{
-// 				tmp->prev=new;
-// 				head=new;
-// 			}
-// 			else
-// 			{
-// 				prev->next=new;
-// 				tmp->prev=new;
-// 			}
-// 		}
-// 		else if (strcmp(input, tmp->word)==0)
-// 		{
-// 			same:
-
-// 			tmp->freq++;
-
-// 			if(tmp!=head && tmp->prev->freq < tmp->freq)
-// 			{
-// 				Node *freqcheck = head;
-// 				//Node *holding = freqcheck->prev;
-
-// 				while(freqcheck->freq > tmp->freq)
-// 					freqcheck=freqcheck->next;
-
-// 				if(freqcheck->freq==tmp->freq)
-// 				{
-// 					while(strcmp(input, freqcheck->word)>0 && freqcheck->freq==tmp->freq)
-// 						freqcheck=freqcheck->next;
-
-// 				}
-
-// 				Node *holding = freqcheck->prev;
-
-// 				if(freqcheck->prev!=NULL)
-// 					freqcheck->prev->next=tmp;
-// 				freqcheck->prev=tmp;
-
-// 				if(tmp->prev!=NULL)
-// 					tmp->prev->next=tmp->next;
-// 				if(tmp->next!=NULL)
-// 					tmp->next->prev=tmp->prev;
-					
-// 				tmp->prev=holding;
-// 				tmp->next=freqcheck;
-
-// 				if(freqcheck==head)
-// 					head=tmp;
-// 			}			
-			
-// 		}	
-// 		else
-// 		{
-// 			Node *new = (Node *)malloc(sizeof(Node));
-// 			new->word=input;
-// 			tmp->next=new;
-// 			new->prev=tmp;
-// 			new->next=NULL;
-// 			new->freq=1;
-// 		}
-// 	}
-// 	return head;
-// }	
-
-// void lookup(Node *head, char *find)
-// {
-
-// 	Node *tmp = head;
-// 	while(tmp!=NULL && strcmp(find, tmp->word)!=0)
-// 		tmp=tmp->next;
-
-// 	if(tmp!=NULL)
-// 		printf("Word %s is in list.\n", tmp->word);
-// 	else
-// 		printf("Word %s is not in list.\n", find);
-
-// }
-
-// void getContents(char * directory_name)
-// {
-// 	DIR * directory;
-// 	struct dirent* dirdetails;
-// 	if(directory=opendir(directory_name),directory==NULL)
-// 	{
-// 		printf("Could not open directory %s\n",directory_name );
-// 	}
-// 	else 
-// 	{
-// 		printf("Successfully opened directory: %s \n",directory_name);
-// 		while(dirdetails=readdir(directory))
-// 		{
-// 			char * path=(char*)malloc(sizeof(char)*(strlen(dirdetails->d_name)+strlen(directory_name)+2));
-// 			strcpy(path, directory_name);
-// 			strcat(path,"/");
-// 			strcat(path,dirdetails->d_name);
-// 			if(dirdetails->d_type==DT_DIR)
-// 			{
-// 				if(strcmp(dirdetails->d_name,".")==0||strcmp(dirdetails->d_name,"..")==0)
-// 				{
-// 					// printf("Skipping directory\n");
-// 					continue;
-// 				}
-// 				printf("Directory name = %s \n",dirdetails->d_name);
-// 				// printf("Path is: %s\n",path);
-// 				// printf("Path is: %s\n",path);
-// 				getContents(path);
-// 			}
-// 			else
-// 			{
-// 				printf("%s is a file in directory %s. Perform actions here! \n", dirdetails->d_name,directory_name	);
-// 				if(dirdetails->d_type==DT_REG)
-// 				{
-// 					// printf("Its a regular file.\n");
-// 					//getting contents of text file.
-// 					int fd=open(path,O_RDONLY);
-// 					if(fd!=-1)
-// 					{
-// 						int length = lseek(fd, 0L, SEEK_END) + 1;
-// 						// printf("Length of file %s is %d\n",path, length );
-// 						lseek(fd, 0L, SEEK_SET);
-// 						char *file_text= (char*)malloc(length*sizeof(char));
-// 						read(fd,file_text,length);
-// 						// printf("file contents: %s \n",file_text);
-// 						//call tokenizer and pass file_text to it!
-
-
-// 					}
-// 					else
-// 					{
-// 						printf("Could not open file %s\n", dirdetails->d_name);
-// 					}
-// 				}
-// 			}	
-// 			free(path);
-// 		}
-// 	}
-// }
-// void tokenizer(Node_* root, char *file_text)
-// {
-
-// }
-// char * delimiter = " \n\t";
-// 						char *output = strtok(file_text, delimiter);
-// 						while(output != NULL)
-// 						{
-// 							if(isalpha(output[0]))
-// 							head=insert(head, output);
-// 							printf("just inserted: %s\n", output);
-// 							output = strtok(NULL, delimiter);
-// 						}
-
-// int main(int argc, char **argv)
-// {
-// 	//assuming that argument is the name of a directory
-// 	getContents(argv[1]);
-// 	return 0;
-// }
 
