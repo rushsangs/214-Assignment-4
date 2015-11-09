@@ -237,8 +237,9 @@ int main(int argc, char **argv)
 {
 	//assuming that argument is the name of a directory
 	SortedListPtr tokens=NULL;
+	char * filename = argv[1];
 	// printf("Starting the program\n");
-	tokens=getContents(argv[1],tokens);
+	tokens=getContents(argv[2],tokens);
 	if(tokens==NULL)
 		printf("tokens is null\n");
 	// printf("SORTED WORDS\n");	
@@ -248,7 +249,7 @@ int main(int argc, char **argv)
 	SortedListIteratorPtr token_walker=SLCreateIterator(tokens);
 	Token* t;
 		
-	FILE *f = fopen("file.txt", "w");
+	FILE *f = fopen(filename, "w");
 	
 	fprintf(f, "{\"list\" : [ \n");
 	t=SLGetItem(token_walker);
@@ -280,5 +281,6 @@ int main(int argc, char **argv)
 	fprintf(f, "]}");	
 	return 0;
 }
+
 
 
