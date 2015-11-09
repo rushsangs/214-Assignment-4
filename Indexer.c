@@ -22,7 +22,7 @@ typedef struct Source{
 int compareTokens(void * x,void* y){
 	Token* a= (Token*)x;
 	Token* b= (Token*)y;
-	return strcmp(a->token,b->token);
+	return strcmp(b->token,a->token);
 }
 
 int compareSources(void * x,void * y){
@@ -84,7 +84,7 @@ void displaySources(Token * t)
 }
 
 //assuming file_name is entire path of file
-int getTokensForFile(char* file_name, SortedListPtr tokens)
+SortedListPtr getTokensForFile(char* file_name, SortedListPtr tokens)
 {
 	if(tokens==NULL)
 	{
@@ -157,14 +157,14 @@ int getTokensForFile(char* file_name, SortedListPtr tokens)
 	
 
 	// printf("SORTED WORDS\n");	
-	SortedListIteratorPtr token_walker=SLCreateIterator(tokens);
-	Token* t;
-	while(t=SLGetItem(token_walker),t!=NULL)
-	{
-		printf("Token: %s\n",t->token );
-		displaySources(t);
-		SLNextItem(token_walker);
-	}
+	// SortedListIteratorPtr token_walker=SLCreateIterator(tokens);
+	// Token* t;
+	// while(t=SLGetItem(token_walker),t!=NULL)
+	// {
+	// 	printf("Token: %s\n",t->token );
+	// 	displaySources(t);
+	// 	SLNextItem(token_walker);
+	// }
 
 
 	// Node *tmp=head;
@@ -180,7 +180,7 @@ int getTokensForFile(char* file_name, SortedListPtr tokens)
 	// lookup(head, "g");
 
 	fclose(fp);		
-	return(0);
+	return tokens;
 }
 SortedListPtr getContents(char * directory_name, SortedListPtr tokens_ptr)
 {
@@ -210,12 +210,12 @@ SortedListPtr getContents(char * directory_name, SortedListPtr tokens_ptr)
 				// printf("Directory name = %s \n",dirdetails->d_name);
 				// printf("Path is: %s\n",path);
 				// printf("Path is: %s\n",path);
-				getContents(path,tokens_ptr);
+				tokens_ptr=getContents(path,tokens_ptr);
 			}
 			else
 			{
 				// printf("%s is a file in directory %s. Perform actions here! \n", dirdetails->d_name,directory_name	);
-				getTokensForFile(path,tokens_ptr);
+				tokens_ptr =getTokensForFile(path,tokens_ptr);
 			}	
 		}
 	}
@@ -227,7 +227,7 @@ int main(int argc, char **argv)
 	//assuming that argument is the name of a directory
 	SortedListPtr tokens=NULL;
 	// printf("Starting the program\n");
-	getContents(argv[1],tokens);
+	tokens=getContents(argv[1],tokens);
 	if(tokens==NULL)
 		printf("tokens is null\n");
 	// printf("SORTED WORDS\n");	
