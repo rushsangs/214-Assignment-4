@@ -146,7 +146,10 @@ SortedListPtr getTokensForFile(char* file_name, SortedListPtr tokens)
 					thisSource->frequency=0;
 					SLInsert(thisToken->sources, thisSource);
 				}
+				//need to remove it and reinsert to insert in order
+				SLRemove(thisToken->sources,thisSource);
 				thisSource->frequency++;
+				SLInsert(thisToken->sources, thisSource);
 				//head=insert(head, output);
 			}	
 			// printf("just inserted: %s\n", output);
