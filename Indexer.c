@@ -195,6 +195,11 @@ SortedListPtr getContents(char * directory_name, SortedListPtr tokens_ptr)
 		printf("Successfully opened directory: %s \n",directory_name);
 		while(dirdetails=readdir(directory))
 		{
+			char * path=(char*)malloc(sizeof(char)*(strlen(dirdetails->d_name)+strlen(directory_name)+2));
+			strcpy(path, directory_name);
+			strcat(path,"/");
+			strcat(path,dirdetails->d_name);
+			
 			if(dirdetails->d_type==DT_DIR)
 			{
 				if(strcmp(dirdetails->d_name,".")==0||strcmp(dirdetails->d_name,"..")==0)
@@ -203,18 +208,14 @@ SortedListPtr getContents(char * directory_name, SortedListPtr tokens_ptr)
 					continue;
 				}
 				printf("Directory name = %s \n",dirdetails->d_name);
-				char * path=(char*)malloc(sizeof(char)*(strlen(dirdetails->d_name)+strlen(directory_name)+2));
-				strcpy(path, directory_name);
 				// printf("Path is: %s\n",path);
-				strcat(path,"/");
-				strcat(path,dirdetails->d_name);
 				// printf("Path is: %s\n",path);
 				getContents(path,tokens_ptr);
 			}
 			else
 			{
 				// printf("%s is a file in directory %s. Perform actions here! \n", dirdetails->d_name,directory_name	);
-				getTokensForFile(dirdetails->d_name,tokens_ptr);
+				getTokensForFile(path,tokens_ptr);
 			}	
 		}
 	}
@@ -227,6 +228,17 @@ int main(int argc, char **argv)
 	SortedListPtr tokens=NULL;
 	printf("Starting the program\n");
 	getContents(argv[1],tokens);
+	if(tokens==NULL)
+		printf("tokens is null\n");
+	printf("SORTED WORDS\n");	
+	SortedListIteratorPtr token_walker=SLCreateIterator(tokens);
+	Token* t;
+	while(t=SLGetItem(token_walker),t!=NULL)
+	{
+		printf("Token: %s\n",t->token );
+		displaySources(t);
+		SLNextItem(token_walker);
+	}
 	return 0;
 }
 
