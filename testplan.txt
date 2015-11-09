@@ -1,0 +1,150 @@
+Testplan:
+
+We tested the indexer with a recursive file structure, and with multiple text files in each of the directory.
+
+Our example was of this format:
+
+test1
+	hello.txt "Hello how are you doing today?"
+	
+	abc
+		how.txt "How cold is the winter in New York?
+Not as cold as the winter in Canada. Canada winter is very cold."
+		
+		def
+			are.text "Never mind I'll find someone like you. I wish nothing but the best from you too.
+Don't brace me with your cold shoulder."
+
+			ghi
+				you.text "You are amazing grace. This is amazing grace."
+
+The JSON output created was in this format:
+
+{"list" : [ 
+	{"Canada" : [
+		{"test1/abc/how.txt" : 2}
+	]},
+	{"Don't" : [
+		{"test1/abc/def/are.txt" : 1}
+	]},
+	{"Hello" : [
+		{"test1/hello.txt" : 1}
+	]},
+	{"How" : [
+		{"test1/abc/how.txt" : 1}
+	]},
+	{"I" : [
+		{"test1/abc/def/are.txt" : 1}
+	]},
+	{"I'll" : [
+		{"test1/abc/def/are.txt" : 1}
+	]},
+	{"Never" : [
+		{"test1/abc/def/are.txt" : 1}
+	]},
+	{"New" : [
+		{"test1/abc/how.txt" : 1}
+	]},
+	{"Not" : [
+		{"test1/abc/how.txt" : 1}
+	]},
+	{"This" : [
+		{"test1/abc/def/ghi/you.txt" : 1}
+	]},
+	{"York" : [
+		{"test1/abc/how.txt" : 1}
+	]},
+	{"amazing" : [
+		{"test1/abc/def/ghi/you.txt" : 2}
+	]},
+	{"are" : [
+		"test1/abc/def/ghi/you.txt" : 1},
+		{"test1/hello.txt" : 1},
+	]},
+	{"as" : [
+		{"test1/abc/how.txt" : 2}
+	]},
+	{"best" : [
+		{"test1/abc/def/are.txt" : 1}
+	]},
+	{"brace" : [
+		{"test1/abc/def/are.txt" : 1}
+	]},
+	{"but" : [
+		{"test1/abc/def/are.txt" : 1}
+	]},
+	{"cold" : [
+		{"test1/abc/how.txt" : 3},
+		{"test1/abc/def/are.txt" : 1}
+	]},
+	{"doing" : [
+		{"test1/hello.txt" : 1}
+	]},
+	{"find" : [
+		{"test1/abc/def/are.txt" : 1}
+	]},
+	{"from" : [
+		{"test1/abc/def/are.txt" : 1}
+	]},
+	{"grace" : [
+		{"test1/abc/def/ghi/you.txt" : 2}
+	]},
+	{"how" : [
+		{"test1/hello.txt" : 1}
+	]},
+	{"in" : [
+		{"test1/abc/how.txt" : 2}
+	]},
+	{"is" : [
+		{"test1/abc/how.txt" : 2},
+		{"test1/abc/def/ghi/you.txt" : 1}
+	]},
+	{"like" : [
+		{"test1/abc/def/are.txt" : 1}
+	]},
+	{"me" : [
+		{"test1/abc/def/are.txt" : 1}
+	]},
+	{"mind" : [
+		{"test1/abc/def/are.txt" : 1}
+	]},
+	{"nothing" : [
+		{"test1/abc/def/are.txt" : 1}
+	]},
+	{"shoulder" : [
+		{"test1/abc/def/are.txt" : 1}
+	]},
+	{"someone" : [
+		{"test1/abc/def/are.txt" : 1}
+	]},
+	{"the" : [
+		{"test1/abc/how.txt" : 2},
+		{"test1/abc/def/are.txt" : 1}
+	]},
+	{"today" : [
+		{"test1/hello.txt" : 1}
+	]},
+	{"too" : [
+		{"test1/abc/def/are.txt" : 1}
+	]},
+	{"very" : [
+		{"test1/abc/how.txt" : 1}
+	]},
+	{"winter" : [
+		{"test1/abc/how.txt" : 3}
+	]},
+	{"wish" : [
+		{"test1/abc/def/are.txt" : 1}
+	]},
+	{"with" : [
+		{"test1/abc/def/are.txt" : 1}
+	]},
+	{"you" : [
+		{"test1/abc/def/are.txt" : 2},
+		{"test1/abc/def/ghi/you.txt" : 1},
+		{"test1/hello.txt" : 1}
+	]},
+	{"your" : [
+		{"test1/abc/def/are.txt" : 1}
+	]}
+]}		
