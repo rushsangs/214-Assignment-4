@@ -91,11 +91,7 @@ SortedListPtr getTokensForFile(char* file_name, SortedListPtr tokens)
 		tokens=SLCreate(&compareTokens,&destroyToken);
 	}
 	
-	// Node *head = (Node *)malloc(sizeof(Node));
-	// head->prev=NULL;
-	// head->next=NULL;
-	// head->word=NULL;
-	// head->freq=1;
+	
 
 	FILE *fp = fopen(file_name, "r");
 
@@ -105,17 +101,17 @@ SortedListPtr getTokensForFile(char* file_name, SortedListPtr tokens)
 		return(0);
 	}
 	
-	char * delimiter = " \n\t.-\\+)(][}{,!?$@#^&*=_";
+	char * delimiter = " \n\t\r\f\v.-\\+)(][}{,!?$@#^&*=_";
 
 
 	while(!feof(fp))
 	{
 		char *input=(char *)malloc(sizeof(char)*255);
 		fgets(input, 255, fp); 
-		// printf("Input is %s\n",input );
+		
 
 		char *output = strtok(input, delimiter);
-		//THESE LINES GIVE A SEGFAULT
+		//THESE LINES GIVE A SEGFAULT? Supposed to convert to lowercase.
 		/*int i;
 		for(i = 0; output[i]; i++)
 		{
@@ -126,19 +122,18 @@ SortedListPtr getTokensForFile(char* file_name, SortedListPtr tokens)
 		{
 			if(isalpha(output[0]))
 			{
-				// printf("token is %s \n",output); 
+				
 				SortedListIteratorPtr tokens_iterator=SLCreateIterator(tokens);
-				// printf("Iterator for tokens created\n"); 
+				
 				Token* thisToken = lookup_token(output, tokens_iterator);
-				//printf("Hi\n");
+				
 				if(thisToken==NULL)
 				{
-					//add new entry for token
-					// printf("Adding new token to tokens SL\n");
+					
 					thisToken=(Token*)malloc(sizeof(Token));
 					thisToken->token=(char*)malloc(strlen(output)*sizeof(char));
 					strcpy(thisToken->token,output);
-					// printf("String copied to token \n");
+					
 					SortedListPtr sources=SLCreate(&compareSources,destroySource);
 					thisToken->sources=sources;
 					SLInsert(tokens, thisToken);
@@ -158,37 +153,16 @@ SortedListPtr getTokensForFile(char* file_name, SortedListPtr tokens)
 				SLRemove(thisToken->sources,thisSource);
 				thisSource->frequency++;
 				SLInsert(thisToken->sources, thisSource);
-				//head=insert(head, output);
+				
 			}	
-			// printf("just inserted: %s\n", output);
+			
 			output = strtok(NULL, delimiter);
 			 
 		}
 	}
 	
 
-	// printf("SORTED WORDS\n");	
-	// SortedListIteratorPtr token_walker=SLCreateIterator(tokens);
-	// Token* t;
-	// while(t=SLGetItem(token_walker),t!=NULL)
-	// {
-	// 	printf("Token: %s\n",t->token );
-	// 	displaySources(t);
-	// 	SLNextItem(token_walker);
-	// }
-
-
-	// Node *tmp=head;
-	// while(tmp!=NULL)
-	// {
-		// printf("%s \tfreq: %d \n", tmp->word, tmp->freq);
-		// tmp=tmp->next;
-	// }	
 	
-
-	// lookup(head, "b");
-	// lookup(head, "c");
-	// lookup(head, "g");
 
 	fclose(fp);		
 	return tokens;
@@ -203,7 +177,7 @@ SortedListPtr getContents(char * directory_name, SortedListPtr tokens_ptr)
 	}
 	else 
 	{
-		// printf("Successfully opened directory: %s \n",directory_name);
+		
 		while(dirdetails=readdir(directory))
 		{
 			char * path=(char*)malloc(sizeof(char)*(strlen(dirdetails->d_name)+strlen(directory_name)+2));
@@ -215,17 +189,15 @@ SortedListPtr getContents(char * directory_name, SortedListPtr tokens_ptr)
 			{
 				if(strcmp(dirdetails->d_name,".")==0||strcmp(dirdetails->d_name,"..")==0)
 				{
-					// printf("Skipping directory\n");
+					
 					continue;
 				}
-				// printf("Directory name = %s \n",dirdetails->d_name);
-				// printf("Path is: %s\n",path);
-				// printf("Path is: %s\n",path);
+				
 				tokens_ptr=getContents(path,tokens_ptr);
 			}
 			else
 			{
-				// printf("%s is a file in directory %s. Perform actions here! \n", dirdetails->d_name,directory_name	);
+				
 				tokens_ptr =getTokensForFile(path,tokens_ptr);
 			}	
 		}
@@ -238,11 +210,11 @@ int main(int argc, char **argv)
 	//assuming that argument is the name of a directory
 	SortedListPtr tokens=NULL;
 	char * filename = argv[1];
-	// printf("Starting the program\n");
+	
 	tokens=getContents(argv[2],tokens);
 	if(tokens==NULL)
 		printf("tokens is null\n");
-	// printf("SORTED WORDS\n");	
+		
 	
 
 
