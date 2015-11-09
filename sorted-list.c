@@ -153,7 +153,7 @@ int SLRemove(SortedListPtr list, void *newObj)
 		list->head=list->head->next;
 		if(tmp->refctr>1)
 		{
-			printf("You are trying to remove a node which has an iterator pointing to it. Node removed from list but still exists in memory.\n");
+			//printf("You are trying to remove a node which has an iterator pointing to it. Node removed from list but still exists in memory.\n");
 			tmp->next=NULL;
 		}
 		else
@@ -171,7 +171,7 @@ int SLRemove(SortedListPtr list, void *newObj)
 			prev->next=tmp->next;
 			if(tmp->refctr>1)
 			{
-				printf("You are trying to remove a node which has an iterator pointing to it. Node removed from list but still exists in memory.\n");
+				//printf("You are trying to remove a node which has an iterator pointing to it. Node removed from list but still exists in memory.\n");
 				tmp->next=NULL;
 			}
 			else
@@ -236,7 +236,7 @@ void SLDestroyIterator(SortedListIteratorPtr iter)
 		free(iter->current);
 	}	
 	free(iter);		
-	printf("Iterator destroyed\n");
+	//printf("Iterator destroyed\n");
 }
 /*
  * SLGetItem returns the pointer to the data associated with the

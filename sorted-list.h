@@ -165,3 +165,4 @@ void * SLGetItem( SortedListIteratorPtr iter );
 void * SLNextItem(SortedListIteratorPtr iter);
 
 #endif
+
