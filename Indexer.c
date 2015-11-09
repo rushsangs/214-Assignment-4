@@ -33,7 +33,7 @@ int compareSources(void * x,void * y){
 	else if(a->frequency>b->frequency)
 		return 1;
 	else
-		return strcmp(a->path,b->path);
+		return strcmp(b->path,a->path);
 }
 
 void destroyToken(void* x){
