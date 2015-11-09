@@ -204,10 +204,10 @@ int SLRemove(SortedListPtr list, void *newObj)
 
 SortedListIteratorPtr SLCreateIterator(SortedListPtr list)
 {
-	printf("Creating iterator\n");
+	// printf("Creating iterator\n");
 	SortedListIteratorPtr helper = (SortedListIteratorPtr)(malloc(sizeof(struct SortedListIterator)));
 	helper->destructf=list->destructf;
-	printf("%s %d\n",__FILE__, __LINE__ );
+	// printf("%s %d\n",__FILE__, __LINE__ );
 	helper->current=list->head;
 	if(helper->current!=NULL)
 		helper->current->refctr++;
