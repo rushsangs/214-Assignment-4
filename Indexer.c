@@ -101,7 +101,7 @@ SortedListPtr getTokensForFile(char* file_name, SortedListPtr tokens)
 		return(0);
 	}
 	
-	char * delimiter = " \n\t\r\f\v.-\\+)(][}{,!?$@#^&*=_";
+	char * delimiter = " \n\t\r\f\v.-\\+)(][}{,!?$@#^&*=_%%^/";
 
 
 	while(!feof(fp))
@@ -110,16 +110,29 @@ SortedListPtr getTokensForFile(char* file_name, SortedListPtr tokens)
 		fgets(input, 255, fp); 
 		
 
-		char *output = strtok(input, delimiter);
+		char *output2 = strtok(input, delimiter);
 		//THESE LINES GIVE A SEGFAULT? Supposed to convert to lowercase.
-		/*int i;
-		for(i = 0; output[i]; i++)
+		// char *output=(char*)malloc((strlen(output2)+1)*sizeof(char));
+		// int i;
+		// for(i = 0; output2[i]; i++)
+		// {
+		// 	output[i]=tolower(output2[i]);
+		// }
+		// output[i]='\0';
+		// printf("Converted to lower case. %s \n",output);	
+		// char* output;
+		while(output2 != NULL)
 		{
-			output[i]=tolower(output[i]);
-		}*/	
-
-		while(output != NULL)
-		{
+			if(strlen(output2)==0)
+				continue;
+			char *output=(char*)malloc((strlen(output2)+1)*sizeof(char));
+			int i;
+			for(i = 0; output2[i]; i++)
+			{
+				output[i]=tolower(output2[i]);
+			}
+			output[i]='\0';
+			printf("Converted to lower case. %s \n",output);
 			if(isalpha(output[0]))
 			{
 				
@@ -155,8 +168,7 @@ SortedListPtr getTokensForFile(char* file_name, SortedListPtr tokens)
 				SLInsert(thisToken->sources, thisSource);
 				
 			}	
-			
-			output = strtok(NULL, delimiter);
+			output2 = strtok(NULL, delimiter);
 			 
 		}
 	}
